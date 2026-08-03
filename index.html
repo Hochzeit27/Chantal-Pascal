@@ -769,6 +769,7 @@ onValue(ref(db, "guests"), snap => {
   const v = snap.val();
   if (v && typeof v === "object"){
     CONFIG.guests = Object.keys(v).map(k => ({ id:k, ...v[k] }));
+    if (typeof autoSelected !== "undefined" && !autoSelected) autoSelected = tryAutoSelectFromURL();
   }
 });
 
@@ -809,6 +810,24 @@ guestListEl.addEventListener("click", e => {
 document.addEventListener("click", e => {
   if (!$("gate").contains(e.target)) guestListEl.classList.remove("show");
 });
+
+// Erzeugt aus einem Namen eine URL-taugliche Kurzform, z.B. "Nick" -> "nick"
+function slugify(s){
+  return (s||"").toLowerCase()
+    .replace(/ä/g,"ae").replace(/ö/g,"oe").replace(/ü/g,"ue").replace(/ß/g,"ss")
+    .replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"");
+}
+
+// Prüft die URL auf ?gast=... und wählt den passenden Gast automatisch aus,
+// damit jede Person einen eigenen Direkt-Link bekommen kann (Suche entfällt dann).
+function tryAutoSelectFromURL(){
+  const params = new URLSearchParams(window.location.search);
+  const gastParam = params.get("gast");
+  if (!gastParam) return false;
+  const match = CONFIG.guests.find(g => slugify(g.label) === gastParam.toLowerCase());
+  if (match){ selectGuest(match); return true; }
+  return false;
+}
 
 function selectGuest(g){
   selectedGuest = g;
@@ -981,6 +1000,7 @@ function buildCalendarLinks(g, party){
 const form = $("rsvpForm"), note = $("formNote");
 const yesBlock = $("yesBlock"), noBlock = $("noBlock");
 const nameFields = $("nameFields"), guestsInput = $("fGuests");
+let autoSelected = tryAutoSelectFromURL();
 
 function renderNameFields(){
   const n = Math.max(1, Math.min(12, parseInt(guestsInput.value,10) || 1));
