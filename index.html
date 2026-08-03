@@ -825,7 +825,13 @@ function tryAutoSelectFromURL(){
   const gastParam = params.get("gast");
   if (!gastParam) return false;
   const match = CONFIG.guests.find(g => slugify(g.label) === gastParam.toLowerCase());
-  if (match){ selectGuest(match); return true; }
+  if (match){
+    selectGuest(match);
+    // Name kommt über den persönlichen Link fest vor — Suche wird nicht mehr gebraucht
+    // und soll auch nicht mehr geändert werden können.
+    $("gate").hidden = true;
+    return true;
+  }
   return false;
 }
 
