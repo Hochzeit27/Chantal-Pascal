@@ -972,6 +972,16 @@ function localDate(datePart, hhmm){
 }
 function toGCalStamp(d){ return d.toISOString().replace(/[-:]/g,"").split(".")[0] + "Z"; }
 function toICSStamp(d){ return toGCalStamp(d); }
+// Escaping nach RFC 5545: Backslash zuerst, dann Semikolon, Komma, Zeilenumbruch —
+// sonst können einzelne Sonderzeichen im Text (z.B. in Orts-/Beschreibungstexten)
+// die Datei für Kalender-Apps ungültig machen.
+function escIcsText(s){
+  return String(s||"")
+    .replace(/\\/g, "\\\\")
+    .replace(/;/g, "\\;")
+    .replace(/,/g, "\\,")
+    .replace(/\n/g, "\\n");
+}
 
 function buildCalendarLinks(g, party){
   const datePart = (CONFIG.datumISO || "").slice(0,10); // JJJJ-MM-TT
@@ -1015,14 +1025,18 @@ function buildCalendarLinks(g, party){
     `DTSTAMP:${toICSStamp(new Date())}`,
     `DTSTART:${toICSStamp(start)}`,
     `DTEND:${toICSStamp(end)}`,
-    `SUMMARY:${title.replace(/,/g,"\\,")}`,
-    `LOCATION:${location.replace(/,/g,"\\,")}`,
-    `DESCRIPTION:${details.replace(/\n/g,"\\n").replace(/,/g,"\\,")}`,
+    `SUMMARY:${escIcsText(title)}`,
+    `LOCATION:${escIcsText(location)}`,
+    `DESCRIPTION:${escIcsText(details)}`,
     "END:VEVENT","END:VCALENDAR",
   ].join("\r\n");
+  const blob = new Blob([ics], { type: "text/calendar;charset=utf-8" });
   const icsBtn = $("icsBtn");
-  icsBtn.removeAttribute("download");
-  icsBtn.href = "data:text/calendar;charset=utf-8," + encodeURIComponent(ics);
+  if (icsBtn.dataset.blobUrl) URL.revokeObjectURL(icsBtn.dataset.blobUrl);
+  const url = URL.createObjectURL(blob);
+  icsBtn.href = url;
+  icsBtn.dataset.blobUrl = url;
+  icsBtn.download = `Hochzeit-${CONFIG.braut}-${CONFIG.braeutigam}${party ? "-Party" : ""}.ics`;
 }
 
 /* ═══════════════════════ BLÜTENBLÄTTER ═══════════════════════ */
