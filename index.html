@@ -246,6 +246,12 @@ body::before{
 .row-actions .del{ border-color:rgba(224,176,160,.6); color:#e0b0a0; }
 .row-actions .del:hover{ background:rgba(224,176,160,.15); }
 .row-actions .save{ border-color:#c9dcae; color:#c9dcae; }
+.link-chip{
+  display:inline-block; color:var(--paper); border:1px solid rgba(245,241,232,.35);
+  padding:6px 10px; font-size:11px; letter-spacing:.08em; text-transform:uppercase;
+  text-decoration:none; white-space:nowrap;
+}
+.link-chip:hover{ background:rgba(245,241,232,.1); }
 .admin td input, .admin td select{
   background:rgba(245,241,232,.08); border:1px solid rgba(245,241,232,.3); color:var(--paper);
   padding:6px 8px; font-family:var(--sans); font-size:13px; width:100%; min-width:70px;
@@ -495,7 +501,7 @@ body::before{
     </div>
     <button type="button" class="btn" id="exportExcel" style="max-width:260px;margin:0 auto 26px;">Als Excel exportieren</button>
     <table>
-      <thead><tr><th>Name</th><th>Antwort</th><th>Pers.</th><th>Typ</th><th>Wünsche</th><th>Nachricht</th><th>Aktionen</th></tr></thead>
+      <thead><tr><th>Name</th><th>Antwort</th><th>Pers.</th><th>Typ</th><th>Wünsche</th><th>Nachricht</th><th>Link</th><th>Aktionen</th></tr></thead>
       <tbody id="adminRows"></tbody>
     </table>
   </div>
@@ -554,6 +560,8 @@ body::before{
       <p class="editor-hint">Diese Liste bestimmt, wen Gäste bei der Suche finden und welche Einladung (ganzer Tag / nur Party) sie sehen.</p>
       <div id="guestRows"></div>
       <button type="button" class="btn" id="addGuestRow" style="background:var(--sage-deep);">+ Gast hinzufügen</button>
+      <button type="button" class="btn" id="showAllLinks" style="background:var(--sage-deep);margin-top:10px;">Alle Links anzeigen</button>
+      <textarea id="allLinksBox" readonly style="display:none;margin-top:14px;min-height:220px;font-family:monospace;font-size:12px;"></textarea>
     </div>
 
     <button type="button" class="btn" id="saveConfig">Alles speichern</button>
@@ -634,62 +642,62 @@ const CONFIG = {
      Bitte über "Inhalte bearbeiten" → Gästeliste bei den Nur-Party-Gästen
      den Typ auf "Nur Party" umstellen. */
   guests: [
-    { label:"Ani & Giu", persons:2, type:"voll", members:["Ani", "Giu"] },
-    { label:"Maddy & Chris", persons:2, type:"voll", members:["Maddy", "Chris"] },
-    { label:"Mama & Markus", persons:2, type:"voll", members:["Mama", "Markus"] },
-    { label:"Mo", persons:1, type:"voll", members:["Mo"] },
-    { label:"Yves und Tobi", persons:2, type:"voll", members:["Yves", "Tobi"] },
-    { label:"Susi & Gio", persons:2, type:"voll", members:["Susi", "Gio"] },
-    { label:"Oma & Opa", persons:2, type:"voll", members:["Oma", "Opa"] },
-    { label:"Jochen & Ela", persons:2, type:"voll", members:["Jochen", "Ela"] },
-    { label:"Andrea & Klaus", persons:2, type:"voll", members:["Andrea", "Klaus"] },
-    { label:"Biena", persons:1, type:"voll", members:["Biena"] },
-    { label:"Louis & Mareen", persons:2, type:"voll", members:["Louis", "Mareen"] },
-    { label:"Paulina & David", persons:2, type:"voll", members:["Paulina", "David"] },
-    { label:"Metti & Selina", persons:2, type:"voll", members:["Metti", "Selina"] },
-    { label:"Benny", persons:1, type:"voll", members:["Benny"] },
-    { label:"Robbe & Sandra", persons:2, type:"voll", members:["Robbe", "Sandra"] },
-    { label:"Kevin", persons:1, type:"voll", members:["Kevin"] },
-    { label:"Johanna", persons:1, type:"voll", members:["Johanna"] },
-    { label:"Koso", persons:1, type:"voll", members:["Koso"] },
-    { label:"Jenny + Julian", persons:2, type:"voll", members:["Jenny", "Julian"] },
-    { label:"Christina & Valera", persons:2, type:"voll", members:["Christina", "Valera"] },
-    { label:"Zilli", persons:1, type:"voll", members:["Zilli"] },
-    { label:"Milli", persons:1, type:"voll", members:["Milli"] },
-    { label:"Shara", persons:1, type:"voll", members:["Shara"] },
-    { label:"Seli", persons:1, type:"voll", members:["Seli"] },
-    { label:"Chef & Silke", persons:2, type:"voll", members:["Chef", "Silke"] },
-    { label:"Marita", persons:1, type:"voll", members:["Marita"] },
-    { label:"Siggi", persons:1, type:"voll", members:["Siggi"] },
-    { label:"Frank & Silke", persons:2, type:"voll", members:["Frank", "Silke"] },
-    { label:"Nick", persons:1, type:"voll", members:["Nick"] },
-    { label:"Paul", persons:1, type:"voll", members:["Paul"] },
-    { label:"Moritz & Nina", persons:2, type:"voll", members:["Moritz", "Nina"] },
-    { label:"Lisa & Dietrich", persons:2, type:"voll", members:["Lisa", "Dietrich"] },
-    { label:"Delia & Matthias & Levia", persons:3, type:"voll", members:["Delia", "Matthias", "Levia"] },
-    { label:"Jenny", persons:1, type:"voll", members:["Jenny"] },
-    { label:"Verena & Marko & Sophie", persons:3, type:"voll", members:["Verena", "Marko", "Sophie"] },
-    { label:"Silvia & Siggi", persons:2, type:"voll", members:["Silvia", "Siggi"] },
-    { label:"Dirk & Itti", persons:2, type:"voll", members:["Dirk", "Itti"] },
-    { label:"André & Susi", persons:2, type:"voll", members:["André", "Susi"] },
-    { label:"Suse & Frank", persons:2, type:"voll", members:["Suse", "Frank"] },
-    { label:"Karsten & Doro", persons:2, type:"voll", members:["Karsten", "Doro"] },
-    { label:"Marko & Christina", persons:2, type:"voll", members:["Marko", "Christina"] },
-    { label:"Nico & Jenny", persons:2, type:"voll", members:["Nico", "Jenny"] },
-    { label:"Matthias Strozik & Partner", persons:2, type:"voll", members:["Matthias Strozik"] },
-    { label:"Tante Brigitte", persons:1, type:"voll", members:["Tante Brigitte"] },
-    { label:"Marvin & Sonja", persons:2, type:"voll", members:["Marvin", "Sonja"] },
-    { label:"Jessy & Eugen", persons:2, type:"voll", members:["Jessy", "Eugen"] },
-    { label:"Erik & Angelina", persons:2, type:"voll", members:["Erik", "Angelina"] },
-    { label:"Rene & Elisa", persons:2, type:"voll", members:["Rene", "Elisa"] },
-    { label:"Manu & Thomas", persons:2, type:"voll", members:["Manu", "Thomas"] },
-    { label:"Klaus & Sandra", persons:2, type:"voll", members:["Klaus", "Sandra"] },
-    { label:"Alena & Partner", persons:2, type:"voll", members:["Alena"] },
-    { label:"Nici & Partner", persons:2, type:"voll", members:["Nici"] },
-    { label:"Maxi B.", persons:1, type:"voll", members:["Maxi B."] },
-    { label:"Maxi T.", persons:1, type:"voll", members:["Maxi T."] },
-    { label:"Kai", persons:1, type:"voll", members:["Kai"] },
-    { label:"Felix", persons:1, type:"voll", members:["Felix"] },
+    { id:"ani-giu", label:"Ani & Giu", persons:2, type:"voll", members:["Ani", "Giu"] },
+    { id:"maddy-chris", label:"Maddy & Chris", persons:2, type:"voll", members:["Maddy", "Chris"] },
+    { id:"mama-markus", label:"Mama & Markus", persons:2, type:"voll", members:["Mama", "Markus"] },
+    { id:"mo", label:"Mo", persons:1, type:"voll", members:["Mo"] },
+    { id:"yves-und-tobi", label:"Yves und Tobi", persons:2, type:"voll", members:["Yves", "Tobi"] },
+    { id:"susi-gio", label:"Susi & Gio", persons:2, type:"voll", members:["Susi", "Gio"] },
+    { id:"oma-opa", label:"Oma & Opa", persons:2, type:"voll", members:["Oma", "Opa"] },
+    { id:"jochen-ela", label:"Jochen & Ela", persons:2, type:"voll", members:["Jochen", "Ela"] },
+    { id:"andrea-klaus", label:"Andrea & Klaus", persons:2, type:"voll", members:["Andrea", "Klaus"] },
+    { id:"biena", label:"Biena", persons:1, type:"voll", members:["Biena"] },
+    { id:"louis-mareen", label:"Louis & Mareen", persons:2, type:"voll", members:["Louis", "Mareen"] },
+    { id:"paulina-david", label:"Paulina & David", persons:2, type:"voll", members:["Paulina", "David"] },
+    { id:"metti-selina", label:"Metti & Selina", persons:2, type:"voll", members:["Metti", "Selina"] },
+    { id:"benny", label:"Benny", persons:1, type:"voll", members:["Benny"] },
+    { id:"robbe-sandra", label:"Robbe & Sandra", persons:2, type:"voll", members:["Robbe", "Sandra"] },
+    { id:"kevin", label:"Kevin", persons:1, type:"voll", members:["Kevin"] },
+    { id:"johanna", label:"Johanna", persons:1, type:"voll", members:["Johanna"] },
+    { id:"koso", label:"Koso", persons:1, type:"voll", members:["Koso"] },
+    { id:"jenny-julian", label:"Jenny + Julian", persons:2, type:"voll", members:["Jenny", "Julian"] },
+    { id:"christina-valera", label:"Christina & Valera", persons:2, type:"voll", members:["Christina", "Valera"] },
+    { id:"zilli", label:"Zilli", persons:1, type:"voll", members:["Zilli"] },
+    { id:"milli", label:"Milli", persons:1, type:"voll", members:["Milli"] },
+    { id:"shara", label:"Shara", persons:1, type:"voll", members:["Shara"] },
+    { id:"seli", label:"Seli", persons:1, type:"voll", members:["Seli"] },
+    { id:"chef-silke", label:"Chef & Silke", persons:2, type:"voll", members:["Chef", "Silke"] },
+    { id:"marita", label:"Marita", persons:1, type:"voll", members:["Marita"] },
+    { id:"siggi", label:"Siggi", persons:1, type:"voll", members:["Siggi"] },
+    { id:"frank-silke", label:"Frank & Silke", persons:2, type:"voll", members:["Frank", "Silke"] },
+    { id:"nick", label:"Nick", persons:1, type:"voll", members:["Nick"] },
+    { id:"paul", label:"Paul", persons:1, type:"voll", members:["Paul"] },
+    { id:"moritz-nina", label:"Moritz & Nina", persons:2, type:"voll", members:["Moritz", "Nina"] },
+    { id:"lisa-dietrich", label:"Lisa & Dietrich", persons:2, type:"voll", members:["Lisa", "Dietrich"] },
+    { id:"delia-matthias-levia", label:"Delia & Matthias & Levia", persons:3, type:"voll", members:["Delia", "Matthias", "Levia"] },
+    { id:"jenny", label:"Jenny", persons:1, type:"voll", members:["Jenny"] },
+    { id:"verena-marko-sophie", label:"Verena & Marko & Sophie", persons:3, type:"voll", members:["Verena", "Marko", "Sophie"] },
+    { id:"silvia-siggi", label:"Silvia & Siggi", persons:2, type:"voll", members:["Silvia", "Siggi"] },
+    { id:"dirk-itti", label:"Dirk & Itti", persons:2, type:"voll", members:["Dirk", "Itti"] },
+    { id:"andr-susi", label:"André & Susi", persons:2, type:"voll", members:["André", "Susi"] },
+    { id:"suse-frank", label:"Suse & Frank", persons:2, type:"voll", members:["Suse", "Frank"] },
+    { id:"karsten-doro", label:"Karsten & Doro", persons:2, type:"voll", members:["Karsten", "Doro"] },
+    { id:"marko-christina", label:"Marko & Christina", persons:2, type:"voll", members:["Marko", "Christina"] },
+    { id:"nico-jenny", label:"Nico & Jenny", persons:2, type:"voll", members:["Nico", "Jenny"] },
+    { id:"matthias-strozik-partner", label:"Matthias Strozik & Partner", persons:2, type:"voll", members:["Matthias Strozik"] },
+    { id:"tante-brigitte", label:"Tante Brigitte", persons:1, type:"voll", members:["Tante Brigitte"] },
+    { id:"marvin-sonja", label:"Marvin & Sonja", persons:2, type:"voll", members:["Marvin", "Sonja"] },
+    { id:"jessy-eugen", label:"Jessy & Eugen", persons:2, type:"voll", members:["Jessy", "Eugen"] },
+    { id:"erik-angelina", label:"Erik & Angelina", persons:2, type:"voll", members:["Erik", "Angelina"] },
+    { id:"rene-elisa", label:"Rene & Elisa", persons:2, type:"voll", members:["Rene", "Elisa"] },
+    { id:"manu-thomas", label:"Manu & Thomas", persons:2, type:"voll", members:["Manu", "Thomas"] },
+    { id:"klaus-sandra", label:"Klaus & Sandra", persons:2, type:"voll", members:["Klaus", "Sandra"] },
+    { id:"alena-partner", label:"Alena & Partner", persons:2, type:"voll", members:["Alena"] },
+    { id:"nici-partner", label:"Nici & Partner", persons:2, type:"voll", members:["Nici"] },
+    { id:"maxi-b", label:"Maxi B.", persons:1, type:"voll", members:["Maxi B."] },
+    { id:"maxi-t", label:"Maxi T.", persons:1, type:"voll", members:["Maxi T."] },
+    { id:"kai", label:"Kai", persons:1, type:"voll", members:["Kai"] },
+    { id:"felix", label:"Felix", persons:1, type:"voll", members:["Felix"] },
   ],
 
   // Optional: E-Mail-Fallback, falls das Online-Speichern scheitert
@@ -818,13 +826,20 @@ function slugify(s){
     .replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"");
 }
 
+function personalLink(id){
+  const base = window.location.origin + window.location.pathname;
+  return base + "?gast=" + id;
+}
+
 // Prüft die URL auf ?gast=... und wählt den passenden Gast automatisch aus,
 // damit jede Person einen eigenen Direkt-Link bekommen kann (Suche entfällt dann).
+// Abgleich läuft über die feste ID (nicht mehr über den Namen), damit der Link
+// auch nach einer Umbenennung des Gastes weiter funktioniert.
 function tryAutoSelectFromURL(){
   const params = new URLSearchParams(window.location.search);
-  const gastParam = params.get("gast");
+  const gastParam = (params.get("gast") || "").toLowerCase();
   if (!gastParam) return false;
-  const match = CONFIG.guests.find(g => slugify(g.label) === gastParam.toLowerCase());
+  const match = CONFIG.guests.find(g => (g.id || slugify(g.label)) === gastParam);
   if (match){
     selectGuest(match);
     // Name kommt über den persönlichen Link fest vor — Suche wird nicht mehr gebraucht
@@ -1058,6 +1073,7 @@ form.addEventListener("submit", async e => {
     guests:  attending === "ja" ? (parseInt(guestsInput.value,10) || names.length) : 0,
     diet:    attending === "ja" ? $("fDiet").value.trim() : "",
     message: $("fMsg").value.trim(),
+    guestId:    selectedGuest ? (selectedGuest.id || slugify(selectedGuest.label)) : "",
     guestLabel: selectedGuest ? selectedGuest.label : "",
     type:       selectedGuest ? selectedGuest.type  : "",
     createdAt: serverTimestamp(),
@@ -1144,6 +1160,7 @@ function renderAdminRows(){
   const rows = currentRsvpRows;
   $("adminRows").innerHTML = rows.map(v => {
     if (v.key === editingKey) return adminRowEdit(v);
+    const link = personalLink(v.guestId || slugify(v.guestLabel || v.name));
     return `
       <tr data-key="${v.key}">
         <td>${esc(v.name)}</td>
@@ -1152,15 +1169,17 @@ function renderAdminRows(){
         <td>${v.type==='party'?'Party':(v.type==='voll'?'Ganzer Tag':'–')}</td>
         <td>${esc(v.diet)||'–'}</td>
         <td>${esc(v.message)||'–'}</td>
+        <td><a href="${link}" target="_blank" rel="noopener" class="link-chip">Öffnen</a></td>
         <td class="row-actions">
           <button type="button" class="edit">Bearbeiten</button>
           <button type="button" class="del">Löschen</button>
         </td>
       </tr>`;
-  }).join("") || '<tr><td colspan="7" style="text-align:center;opacity:.6;">Noch keine Rückmeldungen.</td></tr>';
+  }).join("") || '<tr><td colspan="8" style="text-align:center;opacity:.6;">Noch keine Rückmeldungen.</td></tr>';
 }
 
 function adminRowEdit(v){
+  const link = personalLink(v.guestId || slugify(v.guestLabel || v.name));
   return `
     <tr data-key="${v.key}">
       <td><input type="text" class="eName" value="${esc(v.name)}"></td>
@@ -1179,6 +1198,7 @@ function adminRowEdit(v){
       </td>
       <td><input type="text" class="eDiet" value="${esc(v.diet)}"></td>
       <td><input type="text" class="eMessage" value="${esc(v.message)}"></td>
+      <td><a href="${link}" target="_blank" rel="noopener" class="link-chip">Öffnen</a></td>
       <td class="row-actions">
         <button type="button" class="save">Speichern</button>
         <button type="button" class="cancel">Abbrechen</button>
@@ -1306,6 +1326,7 @@ function addGuestRow(g){
   g = g || { label:"", persons:1, type:"voll", members:[] };
   const row = document.createElement("div");
   row.className = "guest-row";
+  row.dataset.gid = g.id || ""; // feste ID, bleibt auch bei Umbenennung erhalten
   row.innerHTML = `
     <div class="field"><label>Name / Familie</label><input type="text" class="gLabel" value="${esc(g.label)}" placeholder="Familie Muster"></div>
     <div class="field"><label>Personen</label><input type="number" class="gPersons" min="1" max="12" value="${g.persons||1}"></div>
@@ -1316,11 +1337,24 @@ function addGuestRow(g){
       </select>
     </div>
     <div class="field"><label>Namen (Komma-getrennt)</label><input type="text" class="gMembers" value="${esc((g.members||[]).join(', '))}" placeholder="Anna Muster, Ben Muster"></div>
+    <div class="field"><label>Persönlicher Link</label><a class="link-chip gLink" href="${personalLink(g.id || slugify(g.label))}" target="_blank" rel="noopener">Öffnen</a></div>
     <button type="button" class="del">Entfernen</button>`;
   row.querySelector(".del").addEventListener("click", () => row.remove());
   guestRowsEl.appendChild(row);
 }
 $("addGuestRow").addEventListener("click", () => addGuestRow());
+$("showAllLinks").addEventListener("click", () => {
+  const box = $("allLinksBox");
+  const lines = [...guestRowsEl.querySelectorAll(".guest-row")].map(row => {
+    const label = row.querySelector(".gLabel").value.trim();
+    if (!label) return null;
+    const id = row.dataset.gid || slugify(label);
+    return `${label}: ${personalLink(id)}`;
+  }).filter(Boolean);
+  box.value = lines.join("\n");
+  box.style.display = "block";
+  box.focus(); box.select();
+});
 
 $("saveConfig").addEventListener("click", async () => {
   editNote.className = "form-note"; editNote.textContent = "Wird gespeichert …";
@@ -1352,11 +1386,23 @@ $("saveConfig").addEventListener("click", async () => {
   };
 
   const guestsObj = {};
-  [...guestRowsEl.querySelectorAll(".guest-row")].forEach((row, i) => {
+  const usedIds = new Set();
+  [...guestRowsEl.querySelectorAll(".guest-row")].forEach(row => {
     const label = row.querySelector(".gLabel").value.trim();
     if (!label) return;
     const members = row.querySelector(".gMembers").value.split(",").map(s => s.trim()).filter(Boolean);
-    guestsObj["g" + i] = {
+    // Feste ID beibehalten, falls schon vorhanden — nur neue Gäste bekommen eine neue,
+    // aus dem Namen abgeleitete ID. Diese ändert sich danach auch bei Umbenennung nicht mehr,
+    // damit bereits verschickte persönliche Links weiter funktionieren.
+    let id = row.dataset.gid;
+    if (!id){
+      let base = slugify(label) || "gast";
+      id = base; let n = 2;
+      while (usedIds.has(id)){ id = base + "-" + n; n++; }
+    }
+    usedIds.add(id);
+    row.dataset.gid = id;
+    guestsObj[id] = {
       label,
       persons: parseInt(row.querySelector(".gPersons").value, 10) || 1,
       type: row.querySelector(".gType").value,
@@ -1371,6 +1417,9 @@ $("saveConfig").addEventListener("click", async () => {
       set(ref(db, "siteConfig"), newConfig),
       set(ref(db, "guests"), guestsObj),
     ]);
+    Object.assign(CONFIG, newConfig);
+    CONFIG.guests = Object.keys(guestsObj).map(k => ({ id:k, ...guestsObj[k] }));
+    renderConfigTexts();
     editNote.className = "form-note";
     editNote.textContent = "Gespeichert — alle Gäste sehen ab sofort die neuen Inhalte.";
   }catch(err){
