@@ -460,7 +460,7 @@ body::before{
         <div class="section-label" style="margin-top:38px;">Schon vormerken 🤍</div>
         <div class="cal-buttons" id="calButtons">
           <a id="gcalBtn" class="cal-btn" target="_blank" rel="noopener">📅 Zu Google Kalender</a>
-          <a id="icsBtn" class="cal-btn cal-btn--outline" download="Hochzeit.ics">Apple Kalender</a>
+          <a id="icsBtn" class="cal-btn cal-btn--outline">Apple Kalender</a>
         </div>
         <p class="cal-note" id="calNote">Ganztägig vorgemerkt — Uhrzeit und Ort folgen mit der Einladung.</p>
       </div>
@@ -1015,13 +1015,9 @@ function buildCalendarLinks(g, party){
     `DESCRIPTION:${details.replace(/\n/g,"\\n").replace(/,/g,"\\,")}`,
     "END:VEVENT","END:VCALENDAR",
   ].join("\r\n");
-  const blob = new Blob([ics], { type: "text/calendar;charset=utf-8" });
   const icsBtn = $("icsBtn");
-  if (icsBtn.dataset.blobUrl) URL.revokeObjectURL(icsBtn.dataset.blobUrl);
-  const url = URL.createObjectURL(blob);
-  icsBtn.href = url;
-  icsBtn.dataset.blobUrl = url;
-  icsBtn.download = `Hochzeit-${CONFIG.braut}-${CONFIG.braeutigam}${party ? "-Party" : ""}.ics`;
+  icsBtn.removeAttribute("download");
+  icsBtn.href = "data:text/calendar;charset=utf-8," + encodeURIComponent(ics);
 }
 
 /* ═══════════════════════ BLÜTENBLÄTTER ═══════════════════════ */
