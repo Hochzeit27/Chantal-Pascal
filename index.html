@@ -583,13 +583,13 @@ const CONFIG = {
   braeutigam:   "Pascal",
   initialen:    "C&P",
 
-  datumISO:     "2027-05-29T14:00",     // JJJJ-MM-TTThh:mm
+  datumISO:     "2027-05-29T15:45",     // JJJJ-MM-TTThh:mm
   datumText:    "29 · Mai · 2027",
 
   hashtag:      "#ChantalUndPascal2027",
 
   // Trauung  ← bitte Ort ergänzen
-  trauungWhen:  "Samstag · 14:00 Uhr",
+  trauungWhen:  "Samstag · 15:45 Uhr",
   trauungName:  "Ort folgt",
   trauungAddr:  "",
   // Feier (ganzer Tag)
@@ -1001,7 +1001,7 @@ function buildCalendarLinks(g, party){
     : `Hochzeit ${CONFIG.braut} & ${CONFIG.braeutigam}`;
   const location = party
     ? `${CONFIG.feierName}, ${CONFIG.feierAddr}`
-    : `${CONFIG.feierName}, ${CONFIG.feierAddr}`;
+    : `${CONFIG.trauungName}${CONFIG.trauungAddr ? ", "+CONFIG.trauungAddr : ""}`;
   const details = party
     ? CONFIG.textParty
     : `${CONFIG.textVoll}\nTrauung: ${CONFIG.trauungName}${CONFIG.trauungAddr ? ", "+CONFIG.trauungAddr : ""}`;
