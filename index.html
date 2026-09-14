@@ -777,7 +777,16 @@ onValue(ref(db, "guests"), snap => {
   const v = snap.val();
   if (v && typeof v === "object"){
     CONFIG.guests = Object.keys(v).map(k => ({ id:k, ...v[k] }));
-    if (typeof autoSelected !== "undefined" && !autoSelected) autoSelected = tryAutoSelectFromURL();
+    if (selectedGuest){
+      // Bereits ausgewählter Gast: mit den frischen Datenbank-Daten abgleichen und
+      // die Einladung neu aufbauen — wichtig, falls die erste Auswahl (z.B. direkt
+      // beim Laden über ?gast=...) noch mit den eingebauten Standardwerten lief,
+      // bevor die echten Firebase-Daten (z.B. geänderter Typ) angekommen sind.
+      const fresh = CONFIG.guests.find(g => g.id === selectedGuest.id);
+      if (fresh){ selectedGuest = fresh; buildInvite(fresh); }
+    } else if (typeof autoSelected !== "undefined" && !autoSelected){
+      autoSelected = tryAutoSelectFromURL();
+    }
   }
 });
 
