@@ -880,11 +880,15 @@ function selectGuest(g){
 // Prüft, ob für diesen Gast schon eine Rückmeldung gespeichert ist.
 async function checkExistingRsvp(guestId){
   try{
-    const q = query(ref(db, "rsvp"), orderByChild("guestId"), equalTo(guestId));
-    const snap = await get(q);
+    const snap = await get(ref(db, "rsvp"));
     if (snap.exists()){
       let latest = null;
-      snap.forEach(c => { const v = c.val(); if (!latest || (v.createdAt||0) > (latest.createdAt||0)) latest = v; });
+      snap.forEach(c => {
+        const v = c.val();
+        if (v && v.guestId === guestId){
+          if (!latest || (v.createdAt||0) > (latest.createdAt||0)) latest = v;
+        }
+      });
       return latest;
     }
   }catch(err){ console.error("RSVP-Check fehlgeschlagen:", err); }
