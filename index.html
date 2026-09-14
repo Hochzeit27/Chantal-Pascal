@@ -979,7 +979,12 @@ function buildCalendarLinks(g, party){
   const endTime = CONFIG.eventEndeUhrzeit || "23:30";
 
   const start = localDate(datePart, startTime);
-  const end   = localDate(datePart, endTime);
+  let end = localDate(datePart, endTime);
+  // Falls die Feier über Mitternacht geht (z.B. Ende "01:00"), landet das Ende sonst
+  // VOR dem Start am selben Kalendertag — das macht den Kalendereintrag ungültig und
+  // lässt iOS/Safari die Datei ablehnen. Daher: Ende auf den Folgetag verschieben,
+  // wenn es (rechnerisch) vor oder gleich dem Start liegt.
+  if (end <= start) end = new Date(end.getTime() + 24*60*60*1000);
 
   const title = party
     ? `Hochzeitsparty ${CONFIG.braut} & ${CONFIG.braeutigam}`
