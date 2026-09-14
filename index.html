@@ -144,6 +144,7 @@ body::before{
 .cal-btn:hover{ background:var(--sage-deep); border-color:var(--sage-deep); }
 .cal-btn--outline{ background:transparent; color:var(--ink); border-color:var(--sage); }
 .cal-btn--outline:hover{ background:var(--sage); color:var(--paper); }
+.cal-note{ font-size:12px; color:var(--ink-soft); margin-top:16px; text-align:center; }
 .cal-ico{ font-size:15px; }
 @media (max-width:480px){ .cal-buttons{ flex-direction:column; align-items:stretch; } .cal-btn{ justify-content:center; } }
 
@@ -456,14 +457,12 @@ body::before{
       <div class="wrap reveal">
         <div class="section-label">Der Tag</div>
         <div class="cards" id="cards"></div>
+        <div class="section-label" style="margin-top:38px;">Schon vormerken 🤍</div>
         <div class="cal-buttons" id="calButtons">
-          <a id="gcalBtn" class="cal-btn" target="_blank" rel="noopener">
-            <span class="cal-ico">📅</span> Zu Google Kalender
-          </a>
-          <a id="icsBtn" class="cal-btn cal-btn--outline" download="Hochzeit.ics">
-            <span class="cal-ico">🍎</span> Zu Apple / Outlook Kalender
-          </a>
+          <a id="gcalBtn" class="cal-btn" target="_blank" rel="noopener">📅 Zu Google Kalender</a>
+          <a id="icsBtn" class="cal-btn cal-btn--outline" download="Hochzeit.ics">Apple Kalender</a>
         </div>
+        <p class="cal-note" id="calNote">Ganztägig vorgemerkt — Uhrzeit und Ort folgen mit der Einladung.</p>
       </div>
     </section>
 
@@ -573,7 +572,7 @@ body::before{
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getDatabase, ref, push, set, update, remove, onValue, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { getDatabase, ref, push, set, update, remove, onValue, get, query, orderByChild, equalTo, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 /* ═══════════════════════════════════════════════════════════════
@@ -870,6 +869,45 @@ function selectGuest(g){
   guestsInput.value = g.persons || 1;
   if (form.attending.value === "ja") renderNameFields();
   requestAnimationFrame(() => inviteRegion.scrollIntoView({ behavior:"smooth", block:"start" }));
+
+  // Falls dieser Gast schon geantwortet hat: Fragen nicht nochmal stellen,
+  // sondern direkt die (bereits gegebene) Rückmeldung + finale Einladung zeigen.
+  checkExistingRsvp(g.id || slugify(g.label)).then(entry => {
+    if (entry) showAlreadyResponded(entry, g);
+  });
+}
+
+// Prüft, ob für diesen Gast schon eine Rückmeldung gespeichert ist.
+async function checkExistingRsvp(guestId){
+  try{
+    const q = query(ref(db, "rsvp"), orderByChild("guestId"), equalTo(guestId));
+    const snap = await get(q);
+    if (snap.exists()){
+      let latest = null;
+      snap.forEach(c => { const v = c.val(); if (!latest || (v.createdAt||0) > (latest.createdAt||0)) latest = v; });
+      return latest;
+    }
+  }catch(err){ console.error("RSVP-Check fehlgeschlagen:", err); }
+  return null;
+}
+
+// Zeigt direkt die bereits abgegebene Rückmeldung an, ohne das Formular erneut zu stellen.
+function showAlreadyResponded(entry, g){
+  form.style.display = "none";
+  $("thanks").classList.add("show");
+  const solo = (g.persons || (g.members||[]).length || 1) === 1;
+  $("thanksConfirm").textContent = solo
+    ? "Wir haben deine Rückmeldung bereits erhalten."
+    : "Wir haben eure Rückmeldung bereits erhalten.";
+  $("thanksMsg").textContent = entry.attending === "ja"
+    ? (solo ? "Wunderbar — wir freuen uns riesig auf dich!" : "Wunderbar — wir freuen uns riesig auf euch!")
+    : (solo ? "Schade, dass du nicht dabei sein kannst. Danke für die Rückmeldung."
+            : "Schade, dass ihr nicht dabei sein könnt. Danke für die Rückmeldung.");
+  if (entry.attending === "ja"){
+    const post = $("postRsvp");
+    post.hidden = false;
+    post.querySelectorAll(".reveal").forEach(el => el.classList.add("in"));
+  }
 }
 
 function buildInvite(g){
