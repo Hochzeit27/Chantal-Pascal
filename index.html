@@ -498,7 +498,8 @@ body::before{
       <div class="stat"><b id="stAb">0</b><span>Absagen</span></div>
       <div class="stat"><b id="stTot">0</b><span>Rückmeldungen</span></div>
     </div>
-    <button type="button" class="btn" id="exportExcel" style="max-width:260px;margin:0 auto 26px;">Als Excel exportieren</button>
+    <button type="button" class="btn" id="exportExcel" style="max-width:260px;margin:0 auto 12px;">Rückmeldungen als Excel</button>
+    <button type="button" class="btn" id="exportGuests" style="max-width:260px;margin:0 auto 26px;">Gästeliste &amp; Übersicht als Excel</button>
     <table>
       <thead><tr><th>Name</th><th>Antwort</th><th>Pers.</th><th>Typ</th><th>Wünsche</th><th>Nachricht</th><th>Link</th><th>Aktionen</th></tr></thead>
       <tbody id="adminRows"></tbody>
@@ -589,7 +590,7 @@ const CONFIG = {
   hashtag:      "#ChantalUndPascal2027",
 
   // Trauung  ← bitte Ort ergänzen
-  trauungWhen:  "Samstag · 15:45 Uhr",
+  trauungWhen:  "Samstag · 16:00 Uhr",
   trauungName:  "Ort folgt",
   trauungAddr:  "",
   // Feier (ganzer Tag)
@@ -606,10 +607,11 @@ const CONFIG = {
 
   // Ablauf für GANZTAGS-Gäste
   ablaufVoll: [
-    { zeit:"14:00", text:"Trauung" },
-    { zeit:"15:30", text:"Sektempfang & Gratulation" },
-    { zeit:"16:30", text:"Kaffee & Kuchen" },
-    { zeit:"18:30", text:"Hochzeitsmenü" },
+    { zeit:"15:45", text:"Späteste Ankunft" },
+    { zeit:"16:00", text:"Trauung" },
+    { zeit:"17:00", text:"Sektempfang & Gratulation" },
+    { zeit:"18:00", text:"Kaffee & Kuchen" },
+    { zeit:"19:00", text:"Hochzeitsmenü" },
     { zeit:"20:30", text:"Ankunft der Party-Gäste" },
     { zeit:"21:00", text:"Eröffnungstanz & Party" },
   ],
@@ -1327,6 +1329,51 @@ $("exportExcel").addEventListener("click", () => {
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, "Rückmeldungen");
   XLSX.writeFile(wb, `Rueckmeldungen-${CONFIG.braut}-${CONFIG.braeutigam}.xlsx`);
+});
+
+/* Excel-Export: aktuelle Gästeliste + Auswertung (Ganzer Tag / Party) */
+$("exportGuests").addEventListener("click", () => {
+  if (typeof XLSX === "undefined"){ alert("Excel-Bibliothek konnte nicht geladen werden."); return; }
+  const latest = {};
+  currentRsvpRows.forEach(v => {
+    const id = v.guestId; if (!id) return;
+    if (!latest[id] || (v.createdAt||0) > (latest[id].createdAt||0)) latest[id] = v;
+  });
+  const S = { voll:{eing:0,zu:0,ab:0,offen:0,gG:0,gZ:0,gA:0,gO:0}, party:{eing:0,zu:0,ab:0,offen:0,gG:0,gZ:0,gA:0,gO:0} };
+  const rows = (CONFIG.guests||[]).map(g => {
+    const id = g.id || slugify(g.label);
+    const t = g.type === "party" ? "party" : "voll";
+    const n = g.persons || 1;
+    const r = latest[id];
+    const status = !r ? "noch offen" : (r.attending === "ja" ? "Zusage" : "Absage");
+    const zus = r && r.attending === "ja" ? (r.guests || n) : 0;
+    const s = S[t]; s.eing++; s.gG += n;
+    if (!r){ s.offen++; s.gO += n; } else if (r.attending === "ja"){ s.zu++; s.gZ += zus; } else { s.ab++; s.gA += n; }
+    return {
+      "Name / Gruppe": g.label, "Typ": t === "party" ? "Party" : "Ganzer Tag",
+      "Personen (eingeladen)": n, "Status": status, "Personen (zugesagt)": zus,
+      "Essenswünsche": r ? (r.diet||"") : "", "Nachricht": r ? (r.message||"") : "",
+      "Persönlicher Link": personalLink(id)
+    };
+  });
+  const sum = [
+    ["", "Ganzer Tag", "Party", "Gesamt"],
+    ["Einträge (Gruppen/Einzelpersonen)", S.voll.eing, S.party.eing, S.voll.eing+S.party.eing],
+    ["Personen eingeladen", S.voll.gG, S.party.gG, S.voll.gG+S.party.gG],
+    ["Personen zugesagt", S.voll.gZ, S.party.gZ, S.voll.gZ+S.party.gZ],
+    ["Personen abgesagt", S.voll.gA, S.party.gA, S.voll.gA+S.party.gA],
+    ["Personen noch offen", S.voll.gO, S.party.gO, S.voll.gO+S.party.gO],
+    ["Einträge mit Zusage", S.voll.zu, S.party.zu, S.voll.zu+S.party.zu],
+    ["Einträge mit Absage", S.voll.ab, S.party.ab, S.voll.ab+S.party.ab],
+    ["Einträge noch offen", S.voll.offen, S.party.offen, S.voll.offen+S.party.offen],
+  ];
+  const ws1 = XLSX.utils.aoa_to_sheet(sum); ws1["!cols"] = [{wch:36},{wch:14},{wch:10},{wch:10}];
+  const ws2 = XLSX.utils.json_to_sheet(rows);
+  ws2["!cols"] = [{wch:28},{wch:12},{wch:20},{wch:12},{wch:20},{wch:24},{wch:30},{wch:60}];
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws1, "Übersicht");
+  XLSX.utils.book_append_sheet(wb, ws2, "Gästeliste");
+  XLSX.writeFile(wb, `Gaesteliste-${CONFIG.braut}-${CONFIG.braeutigam}.xlsx`);
 });
 
 function esc(s){ return (s||"").replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
