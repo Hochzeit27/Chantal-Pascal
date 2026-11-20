@@ -134,6 +134,49 @@ body::before{
 .card .maplink{ display:inline-block; margin-top:16px; font-family:var(--sans); font-weight:400; letter-spacing:.16em; text-transform:uppercase; font-size:12px; color:var(--brass); text-decoration:none; border-bottom:1px solid var(--brass); padding-bottom:2px; transition:color .3s, border-color .3s; }
 .card .maplink:hover{ color:var(--sage-deep); border-color:var(--sage-deep); }
 
+/* Anreise, Parken & Übernachten */
+.info-list{ max-width:620px; margin:40px auto 0; display:grid; gap:14px; text-align:left; }
+.info-item{ background:var(--paper); border:1px solid rgba(126,140,106,.35); padding:18px 20px; display:flex; gap:16px; align-items:flex-start; justify-content:space-between; }
+.info-item .ii-main{ min-width:0; }
+.info-item .ii-tag{ font-family:var(--sans); letter-spacing:.2em; text-transform:uppercase; font-size:10.5px; color:var(--brass); margin-bottom:4px; }
+.info-item .ii-name{ font-family:var(--serif); font-size:21px; line-height:1.2; color:var(--ink); }
+.info-item .ii-addr{ font-size:14px; color:var(--ink-soft); margin-top:2px; }
+.info-item .ii-note{ font-size:13.5px; color:var(--sage-deep); margin-top:6px; font-style:italic; }
+.info-item .ii-links{ display:flex; flex-direction:column; gap:8px; align-items:flex-end; flex-shrink:0; }
+.info-item .ii-links a{ font-family:var(--sans); letter-spacing:.14em; text-transform:uppercase; font-size:11px; color:var(--brass); text-decoration:none; border-bottom:1px solid var(--brass); padding-bottom:1px; white-space:nowrap; }
+.info-hint{ max-width:620px; margin:22px auto 0; font-size:14px; color:var(--ink-soft); font-style:italic; }
+@media (max-width:520px){
+  .info-item{ flex-direction:column; gap:10px; }
+  .info-item .ii-links{ flex-direction:row; align-items:center; gap:18px; }
+}
+
+/* Trauzeugen-Kontakt */
+.contact-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:20px; max-width:720px; margin:40px auto 0; }
+.contact-group{ background:var(--paper); border:1px solid rgba(126,140,106,.35); padding:28px 22px; text-align:center; }
+.contact-group h3{ font-family:var(--sans); font-weight:400; letter-spacing:.24em; text-transform:uppercase; font-size:11.5px; color:var(--brass); margin-bottom:14px; }
+.contact-person{ padding:10px 0; }
+.contact-person + .contact-person{ border-top:1px solid rgba(126,140,106,.25); }
+.contact-person .cp-name{ font-family:var(--serif); font-size:26px; color:var(--ink); line-height:1.2; }
+.contact-person .cp-links{ display:flex; justify-content:center; gap:18px; margin-top:8px; flex-wrap:wrap; }
+.contact-person .cp-links a{ font-family:var(--sans); letter-spacing:.14em; text-transform:uppercase; font-size:11px; color:var(--brass); text-decoration:none; border-bottom:1px solid var(--brass); padding-bottom:1px; }
+
+/* Hinweisschild — elegant, aber nicht zu übersehen */
+.notice{ max-width:600px; margin:38px auto 0; position:relative; text-align:center;
+  background:linear-gradient(180deg,#FBF8F1 0%,#F3ECDD 100%);
+  border:1px solid var(--brass); outline:1px solid rgba(172,138,84,.45); outline-offset:6px;
+  padding:34px 30px 30px; box-shadow:0 14px 34px rgba(43,50,38,.10); animation:noticeGlow 3.2s ease-in-out infinite; }
+.notice .n-orn{ display:flex; align-items:center; justify-content:center; gap:12px; color:var(--brass); margin-bottom:12px; }
+.notice .n-orn::before,.notice .n-orn::after{ content:""; height:1px; width:54px; background:linear-gradient(90deg,transparent,var(--brass)); }
+.notice .n-orn::after{ background:linear-gradient(90deg,var(--brass),transparent); }
+.notice .n-orn svg{ width:18px; height:18px; display:block; }
+.notice .n-title{ font-family:var(--serif); font-style:italic; font-weight:500; font-size:clamp(26px,6vw,32px); line-height:1.15; color:var(--sage-deep); margin-bottom:12px; }
+.notice .n-text{ font-size:16.5px; line-height:1.6; color:var(--ink); white-space:pre-line; max-width:470px; margin:0 auto; }
+.notice::before,.notice::after{ content:""; position:absolute; width:16px; height:16px; border:1px solid var(--brass); }
+.notice::before{ top:10px; left:10px; border-right:none; border-bottom:none; }
+.notice::after{ bottom:10px; right:10px; border-left:none; border-top:none; }
+@keyframes noticeGlow{ 0%,100%{ box-shadow:0 14px 34px rgba(43,50,38,.10), 0 0 0 0 rgba(172,138,84,0); } 50%{ box-shadow:0 14px 34px rgba(43,50,38,.10), 0 0 0 10px rgba(172,138,84,.10); } }
+@media (max-width:480px){ .notice{ padding:30px 20px 26px; margin-left:6px; margin-right:6px; } }
+
 /* Kalender-Buttons */
 .cal-buttons{ display:flex; justify-content:center; gap:16px; flex-wrap:wrap; margin-top:38px; }
 .cal-btn{
@@ -387,6 +430,7 @@ body::before{
     <div class="wrap reveal">
       <p class="eyebrow" id="inviteGreeting">Schön, dass ihr dabei seid</p>
       <p class="invite-name" id="inviteName"></p>
+      <div class="notice" id="noticeTop" hidden><div class="n-orn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M12 3c1.6 2.6 1.6 5.4 0 8-1.6-2.6-1.6-5.4 0-8z"/><path d="M12 21c-1.6-2.6-1.6-5.4 0-8 1.6 2.6 1.6 5.4 0 8z"/><path d="M3 12c2.6-1.6 5.4-1.6 8 0-2.6 1.6-5.4 1.6-8 0z"/><path d="M21 12c-2.6 1.6-5.4 1.6-8 0 2.6-1.6 5.4-1.6 8 0z"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/></svg></div><div class="n-title" id="noticeTopTitle">Bitte beachten</div><div class="n-text" id="noticeTopText"></div></div>
     </div>
   </section>
 
@@ -450,6 +494,7 @@ body::before{
     <section class="section" style="padding-bottom:0;">
       <div class="wrap reveal">
         <p class="lead" id="postNote"></p>
+        <div class="notice" id="noticeType" hidden><div class="n-orn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M12 3c1.6 2.6 1.6 5.4 0 8-1.6-2.6-1.6-5.4 0-8z"/><path d="M12 21c-1.6-2.6-1.6-5.4 0-8 1.6 2.6 1.6 5.4 0 8z"/><path d="M3 12c2.6-1.6 5.4-1.6 8 0-2.6 1.6-5.4 1.6-8 0z"/><path d="M21 12c-2.6 1.6-5.4 1.6-8 0 2.6-1.6 5.4-1.6 8 0z"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/></svg></div><div class="n-title" id="noticeTypeTitle">Wichtig für euren Tag</div><div class="n-text" id="noticeTypeText"></div></div>
       </div>
     </section>
 
@@ -472,7 +517,31 @@ body::before{
         <div class="timeline" id="timeline"></div>
       </div>
     </section>
+
+    <section class="section" style="padding-top:0;" id="parkSection">
+      <div class="wrap reveal">
+        <div class="section-label">Anreise &amp; Parken</div>
+        <div class="info-list" id="parkList"></div>
+        <p class="info-hint" id="anreiseHint"></p>
+      </div>
+    </section>
+
+    <section class="section" style="padding-top:0;" id="hotelSection">
+      <div class="wrap reveal">
+        <div class="section-label">Übernachten</div>
+        <div class="info-list" id="hotelList"></div>
+        <p class="info-hint" id="hotelHint"></p>
+      </div>
+    </section>
   </div>
+
+  <section class="section" style="padding-top:0;" id="contactSection">
+    <div class="wrap reveal">
+      <div class="section-label">Fragen? Unsere Trauzeugen</div>
+      <p class="info-hint" id="contactText"></p>
+      <div class="contact-grid" id="contactGrid"></div>
+    </div>
+  </section>
 
 </div><!-- /#inviteRegion -->
 
@@ -556,6 +625,38 @@ body::before{
     </div>
 
     <div class="editor-section">
+      <h3>Anreise &amp; Parken</h3>
+      <p class="editor-hint">Eine Zeile je Parkplatz, Format: <code>trauung oder feier | Name | Adresse | Hinweis</code> – „trauung“ sehen nur Ganztags-Gäste, „feier“ sehen alle.</p>
+      <div class="field"><label>Parkplätze</label><textarea id="eParken" rows="5"></textarea></div>
+      <div class="field"><label>Hinweis unter den Parkplätzen</label><textarea id="eTextAnreise"></textarea></div>
+    </div>
+
+    <div class="editor-section">
+      <h3>Wichtiger Hinweis (auffälliges Feld)</h3>
+      <p class="editor-hint">Leer lassen = Feld wird nicht angezeigt. Für Einzelgäste wird „ihr/euch“ automatisch zu „du/dir“.</p>
+      <div class="field"><label>Schild 1 (für alle, ganz oben) – Titel</label><input type="text" id="eHinweisTitelAllgemein"></div>
+      <div class="field"><label>Schild 1 – Text</label><textarea id="eHinweisAllgemein"></textarea></div>
+      <div class="field"><label>Schild 2 (Ganztags-Gäste, nach Zusage) – Titel</label><input type="text" id="eHinweisTitelVoll"></div>
+      <div class="field"><label>Schild 2 – Text</label><textarea id="eHinweisVoll"></textarea></div>
+      <div class="field"><label>Schild 3 (Party-Gäste, nach Zusage) – Titel</label><input type="text" id="eHinweisTitelParty"></div>
+      <div class="field"><label>Schild 3 – Text</label><textarea id="eHinweisParty"></textarea></div>
+    </div>
+
+    <div class="editor-section">
+      <h3>Trauzeugen (Kontakt)</h3>
+      <p class="editor-hint">Eine Zeile je Person, Format: <code>Name | braut oder braeutigam | Telefonnummer</code> – mit Nummer erscheinen „WhatsApp“ und „Anrufen“.</p>
+      <div class="field"><label>Trauzeugen</label><textarea id="eTrauzeugen" rows="4"></textarea></div>
+      <div class="field"><label>Text über den Kontakten</label><textarea id="eTextKontakt"></textarea></div>
+    </div>
+
+    <div class="editor-section">
+      <h3>Übernachten</h3>
+      <p class="editor-hint">Eine Zeile je Hotel, Format: <code>Name | Adresse | Hinweis | Webseite (optional)</code></p>
+      <div class="field"><label>Hotels</label><textarea id="eHotels" rows="7"></textarea></div>
+      <div class="field"><label>Hinweis unter den Hotels</label><textarea id="eTextHotels"></textarea></div>
+    </div>
+
+    <div class="editor-section">
       <h3>Gästeliste</h3>
       <p class="editor-hint">Diese Liste bestimmt, wen Gäste bei der Suche finden und welche Einladung (ganzer Tag / nur Party) sie sehen.</p>
       <div id="guestRows"></div>
@@ -591,8 +692,8 @@ const CONFIG = {
 
   // Trauung  ← bitte Ort ergänzen
   trauungWhen:  "Samstag · 16:00 Uhr",
-  trauungName:  "Ort folgt",
-  trauungAddr:  "",
+  trauungName:  "Schloss Melschede",
+  trauungAddr:  "Melschede 1, 59846 Sundern",
   // Feier (ganzer Tag)
   feierWhen:    "im Anschluss · ab 16:00 Uhr",
   feierName:    "Gasthaus zur Börse",
@@ -621,6 +722,41 @@ const CONFIG = {
     { zeit:"21:00", text:"Eröffnungstanz" },
     { zeit:"21:30", text:"Party bis in die Nacht" },
   ],
+
+  // Parkmöglichkeiten — ort: "trauung" (nur Ganztags-Gäste sehen es) | "feier" (alle Gäste)
+  parken: [
+    { ort:"trauung", name:"Parken am Schloss Melschede", addr:"Melschede 1, 59846 Sundern", note:"Parkmöglichkeiten direkt am Schloss – bitte der Beschilderung vor Ort folgen." },
+    { ort:"feier", name:"Altstadtgarage (Tiefgarage Neumarkt)", addr:"Neumarkt 6, 59821 Arnsberg", note:"Wenige Gehminuten zur Börse. Geöffnet ca. 6–24 Uhr – wer länger feiert, parkt besser am Sauerlandtheater." },
+    { ort:"feier", name:"Parkplatz Sauerlandtheater", addr:"Brückenplatz, 59821 Arnsberg", note:"Großer Parkplatz am Rand der Altstadt, ca. 5–10 Gehminuten zur Börse." },
+  ],
+  textAnreise: "Tipp: Wer mitfeiern möchte, lässt das Auto am besten stehen – in Arnsberg gibt es Taxis, und die Hotels liegen teils direkt am Alten Markt.",
+  // Hotels / Übernachtung
+  hotels: [
+    { name:"Altes Backhaus", addr:"Alter Markt 27, 59821 Arnsberg", note:"Direkt am Alten Markt – zu Fuß zur Börse.", url:"" },
+    { name:"Zum Landsberger Hof", addr:"Alter Markt 18, 59821 Arnsberg", note:"Direkt am Alten Markt – zu Fuß zur Börse.", url:"" },
+    { name:"Gasthof Ratskeller", addr:"Alter Markt 36, 59821 Arnsberg", note:"Am Alten Markt – zu Fuß zur Börse.", url:"" },
+    { name:"weila – Boutiquehotel", addr:"Ruhrstraße 60, 59821 Arnsberg", note:"Modernes Boutiquehotel, wenige Gehminuten unterhalb der Altstadt.", url:"" },
+    { name:"Compañía Café Design Hotel", addr:"Steinweg 5, 59821 Arnsberg", note:"Kleines Hotel in der Altstadt (ohne Frühstück).", url:"" },
+    { name:"Hotel & Restaurant Seegarten", addr:"Zum Sorpedamm 21, 59846 Sundern", note:"Am Sorpesee, nah am Schloss Melschede – mit Spa.", url:"" },
+    { name:"Hotel Palatino", addr:"Langscheider Str. 46, 59846 Sundern-Langscheid", note:"Ruhig in Langscheid am Sorpesee.", url:"" },
+  ],
+  textHotels: "Am besten frühzeitig buchen – Ende Mai ist im Sauerland Saison.",
+
+  // Trauzeugen als Ansprechpartner — seite: "braut" | "braeutigam", tel optional (z.B. 0171 1234567)
+  trauzeugen: [
+    { name:"Madeline", seite:"braut", tel:"" },
+    { name:"Anika",    seite:"braut", tel:"" },
+    { name:"Nick",     seite:"braeutigam", tel:"" },
+  ],
+  textKontakt: "Ihr habt Fragen, plant eine Überraschung oder möchtet einen Beitrag vorbereiten? Unsere Trauzeugen helfen euch gern weiter.",
+
+  // Auffälliges Hinweisfeld — leer lassen = wird nicht angezeigt
+  hinweisTitelAllgemein: "Bitte beachten",
+  hinweisTitelVoll:  "Wichtig für euren Tag",
+  hinweisTitelParty: "Wichtig für euren Abend",
+  hinweisAllgemein: "Bitte gebt uns hier direkt über diese Seite Bescheid, ob ihr dabei seid – nur so können wir richtig planen.",
+  hinweisVoll:  "Bitte seid spätestens um 15:45 Uhr am Schloss Melschede – die Trauung beginnt pünktlich um 16:00 Uhr.",
+  hinweisParty: "Bitte kommt erst ab 20:30 Uhr in die Börse – vorher läuft noch das Abendessen.",
 
   // Begleittexte je Einladungstyp
   textVoll:  "Ihr seid von Anfang an dabei — wir freuen uns auf einen ganzen Tag mit euch.",
@@ -909,6 +1045,7 @@ function showAlreadyResponded(entry, g){
     ? (solo ? "Wunderbar — wir freuen uns riesig auf dich!" : "Wunderbar — wir freuen uns riesig auf euch!")
     : (solo ? "Schade, dass du nicht dabei sein kannst. Danke für die Rückmeldung."
             : "Schade, dass ihr nicht dabei sein könnt. Danke für die Rückmeldung.");
+  hasResponded = true; $("noticeTop").hidden = true;
   if (entry.attending === "ja"){
     const post = $("postRsvp");
     post.hidden = false;
@@ -959,6 +1096,79 @@ function buildInvite(g){
     `<div class="tl-item"><div class="tl-time">${esc(a.zeit)}</div><div class="tl-desc">${esc(a.text)}</div></div>`).join("");
 
   buildCalendarLinks(g, party);
+  renderTravelInfo(party, solo);
+  renderContacts(solo);
+  renderNotices(party, solo);
+}
+
+function duForm(t){
+  return String(t||"")
+    .replace(/\bIhr seid\b/g,"Du bist").replace(/\bihr seid\b/g,"du bist")
+    .replace(/\bdabei seid\b/g,"dabei bist").replace(/\bda seid\b/g,"da bist")
+    .replace(/\bIhr habt\b/g,"Du hast").replace(/\bihr habt\b/g,"du hast")
+    .replace(/\bgebt\b/g,"gib").replace(/\bkommt\b/g,"komm").replace(/\bseid\b/g,"sei")
+    .replace(/\bplant\b/g,"planst").replace(/\bmöchtet\b/g,"möchtest")
+    .replace(/\bIhr\b/g,"Du").replace(/\bihr\b/g,"du")
+    .replace(/\beuch\b/g,"dir").replace(/\beuren\b/g,"deinen").replace(/\beurem\b/g,"deinem")
+    .replace(/\beure\b/g,"deine").replace(/\beuer\b/g,"dein");
+}
+let hasResponded = false; // nach Rückmeldung wird der "Bitte Bescheid geben"-Hinweis oben ausgeblendet
+function renderNotices(party, solo){
+  const fix = t => solo ? duForm(t) : (t||"");
+  const top = fix(CONFIG.hinweisAllgemein).trim();
+  $("noticeTop").hidden = !top || hasResponded; $("noticeTopText").textContent = top;
+  const typ = fix(party ? CONFIG.hinweisParty : CONFIG.hinweisVoll).trim();
+  $("noticeType").hidden = !typ; $("noticeTypeText").textContent = typ;
+  $("noticeTopTitle").textContent = fix(CONFIG.hinweisTitelAllgemein || "Bitte beachten");
+  $("noticeTypeTitle").textContent = fix((party ? CONFIG.hinweisTitelParty : CONFIG.hinweisTitelVoll) || "Bitte beachten");
+}
+
+function telLinks(tel){
+  const digits = String(tel||"").replace(/[^\d+]/g,"");
+  if (!digits) return "";
+  // WhatsApp braucht internationale Nummer ohne +/00: 0171… → 49171…
+  let wa = digits.replace(/^\+/,"").replace(/^00/,"");
+  if (/^0/.test(wa)) wa = "49" + wa.slice(1);
+  return `<a href="https://wa.me/${wa}" target="_blank" rel="noopener">WhatsApp</a><a href="tel:${digits}">Anrufen</a>`;
+}
+function renderContacts(solo){
+  const list = (CONFIG.trauzeugen || []).filter(t => t && t.name);
+  $("contactSection").hidden = !list.length;
+  let txt = CONFIG.textKontakt || "";
+  if (solo) txt = duForm(txt);
+  $("contactText").textContent = txt;
+  const group = (seite, title) => {
+    const ppl = list.filter(t => (t.seite||"braut") === seite);
+    if (!ppl.length) return "";
+    return `<div class="contact-group"><h3>${esc(title)}</h3>` + ppl.map(t =>
+      `<div class="contact-person"><div class="cp-name">${esc(t.name)}</div>`
+      + (t.tel ? `<div class="cp-links">${telLinks(t.tel)}</div>` : "") + `</div>`).join("") + `</div>`;
+  };
+  $("contactGrid").innerHTML =
+    group("braut", "Trauzeuginnen von " + (CONFIG.braut||"der Braut"))
+  + group("braeutigam", "Trauzeuge von " + (CONFIG.braeutigam||"dem Bräutigam"));
+}
+
+function infoItem(tag, it){
+  const route = `<a href="${mapURL(it.name, it.addr)}" target="_blank" rel="noopener">Route</a>`;
+  const web = it.url ? `<a href="${esc(/^https?:\/\//.test(it.url) ? it.url : "https://"+it.url)}" target="_blank" rel="noopener">Webseite</a>` : "";
+  return `<div class="info-item"><div class="ii-main">`
+    + (tag ? `<div class="ii-tag">${esc(tag)}</div>` : "")
+    + `<div class="ii-name">${esc(it.name)}</div>`
+    + (it.addr ? `<div class="ii-addr">${esc(it.addr)}</div>` : "")
+    + (it.note ? `<div class="ii-note">${esc(it.note)}</div>` : "")
+    + `</div><div class="ii-links">${route}${web}</div></div>`;
+}
+function renderTravelInfo(party, solo){
+  const park = (CONFIG.parken || []).filter(p => p && p.name && (!party || p.ort !== "trauung"));
+  $("parkList").innerHTML = park.map(p =>
+    infoItem(party ? "" : (p.ort === "trauung" ? "Trauung · " + (CONFIG.trauungName||"") : "Feier · " + (CONFIG.feierName||"")), p)).join("");
+  $("parkSection").hidden = !park.length;
+  $("anreiseHint").textContent = CONFIG.textAnreise || "";
+  const hotels = (CONFIG.hotels || []).filter(h => h && h.name);
+  $("hotelList").innerHTML = hotels.map(h => infoItem("", h)).join("");
+  $("hotelSection").hidden = !hotels.length;
+  $("hotelHint").textContent = CONFIG.textHotels || "";
 }
 
 function card(title, when, placeHTML, href){
@@ -1162,6 +1372,7 @@ form.addEventListener("submit", async e => {
       ? (solo ? "Wunderbar — wir freuen uns riesig auf dich!" : "Wunderbar — wir freuen uns riesig auf euch!")
       : (solo ? "Schade, dass du nicht dabei sein kannst. Danke für die Rückmeldung."
               : "Schade, dass ihr nicht dabei sein könnt. Danke für die Rückmeldung.");
+    hasResponded = true; $("noticeTop").hidden = true;
     if (attending === "ja"){
       const post = $("postRsvp");
       post.hidden = false;
@@ -1406,6 +1617,32 @@ function linesToAblauf(text){
   }).filter(a => a.zeit || a.text);
 }
 
+function parkenToLines(arr){ return (arr||[]).map(p => [p.ort||"feier", p.name||"", p.addr||"", p.note||""].join(" | ")).join("\n"); }
+function linesToParken(text){
+  return text.split("\n").map(l => l.trim()).filter(Boolean).map(l => {
+    const f = l.split("|").map(x => x.trim());
+    let ort = (f[0]||"").toLowerCase();
+    if (ort !== "trauung" && ort !== "feier"){ f.unshift("feier"); ort = "feier"; }
+    return { ort, name:f[1]||"", addr:f[2]||"", note:f.slice(3).join(" | ") };
+  }).filter(p => p.name);
+}
+function hotelsToLines(arr){ return (arr||[]).map(h => [h.name||"", h.addr||"", h.note||"", h.url||""].join(" | ").replace(/( \| )+$/,"")).join("\n"); }
+function linesToHotels(text){
+  return text.split("\n").map(l => l.trim()).filter(Boolean).map(l => {
+    const f = l.split("|").map(x => x.trim());
+    return { name:f[0]||"", addr:f[1]||"", note:f[2]||"", url:f[3]||"" };
+  }).filter(h => h.name);
+}
+
+function tzToLines(arr){ return (arr||[]).map(t => [t.name||"", t.seite||"braut", t.tel||""].join(" | ").replace(/ \| $/,"")).join("\n"); }
+function linesToTz(text){
+  return text.split("\n").map(l => l.trim()).filter(Boolean).map(l => {
+    const f = l.split("|").map(x => x.trim());
+    const sd = (f[1]||"").toLowerCase();
+    return { name:f[0]||"", seite: /br(ä|ae)ut(i|e)gam|pascal/.test(sd) ? "braeutigam" : "braut", tel:f[2]||"" };
+  }).filter(t => t.name);
+}
+
 function populateEditor(){
   $("eBraut").value        = CONFIG.braut || "";
   $("eBraeutigam").value   = CONFIG.braeutigam || "";
@@ -1430,6 +1667,18 @@ function populateEditor(){
 
   $("eAblaufVoll").value  = ablaufToLines(CONFIG.ablaufVoll);
   $("eAblaufParty").value = ablaufToLines(CONFIG.ablaufParty);
+  $("eHinweisTitelAllgemein").value = CONFIG.hinweisTitelAllgemein || "";
+  $("eHinweisTitelVoll").value = CONFIG.hinweisTitelVoll || "";
+  $("eHinweisTitelParty").value = CONFIG.hinweisTitelParty || "";
+  $("eHinweisAllgemein").value = CONFIG.hinweisAllgemein || "";
+  $("eHinweisVoll").value = CONFIG.hinweisVoll || "";
+  $("eHinweisParty").value = CONFIG.hinweisParty || "";
+  $("eTrauzeugen").value = tzToLines(CONFIG.trauzeugen);
+  $("eTextKontakt").value = CONFIG.textKontakt || "";
+  $("eParken").value = parkenToLines(CONFIG.parken);
+  $("eTextAnreise").value = CONFIG.textAnreise || "";
+  $("eHotels").value = hotelsToLines(CONFIG.hotels);
+  $("eTextHotels").value = CONFIG.textHotels || "";
 
   guestRowsEl.innerHTML = "";
   (CONFIG.guests || []).forEach(g => addGuestRow(g));
@@ -1495,6 +1744,18 @@ $("saveConfig").addEventListener("click", async () => {
     textPartySingular: $("eTextPartySingular").value.trim(),
     ablaufVoll:   linesToAblauf($("eAblaufVoll").value),
     ablaufParty:  linesToAblauf($("eAblaufParty").value),
+    hinweisTitelAllgemein: $("eHinweisTitelAllgemein").value.trim(),
+    hinweisTitelVoll:  $("eHinweisTitelVoll").value.trim(),
+    hinweisTitelParty: $("eHinweisTitelParty").value.trim(),
+    hinweisAllgemein: $("eHinweisAllgemein").value.trim(),
+    hinweisVoll:  $("eHinweisVoll").value.trim(),
+    hinweisParty: $("eHinweisParty").value.trim(),
+    trauzeugen:   linesToTz($("eTrauzeugen").value),
+    textKontakt:  $("eTextKontakt").value.trim(),
+    parken:       linesToParken($("eParken").value),
+    textAnreise:  $("eTextAnreise").value.trim(),
+    hotels:       linesToHotels($("eHotels").value),
+    textHotels:   $("eTextHotels").value.trim(),
     rsvpEmail:    CONFIG.rsvpEmail || "",
   };
 
