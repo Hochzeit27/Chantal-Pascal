@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Wir heiraten · Chantal & Pascal</title>
-<meta name="description" content="Save the Date — Chantal & Pascal, 29. Mai 2027" />
+<meta name="description" content="Wir sagen Ja — Chantal & Pascal, 29. Mai 2027" />
 
 <!-- Damit Link-Vorschauen (WhatsApp, iMessage, SMS, Social Media) einen schönen
      Titel statt der nackten github.io-URL zeigen. og:image lässt sich nicht mit
@@ -12,10 +12,10 @@
      dafür separat gehostetes Foto verlinken, siehe Hinweis im Chat. -->
 <meta property="og:type" content="website" />
 <meta property="og:title" content="Wir heiraten · Chantal & Pascal" />
-<meta property="og:description" content="Save the Date — 29. Mai 2027. Findet euren Namen und alle Details zu unserer Hochzeit." />
+<meta property="og:description" content="Wir sagen Ja — 29. Mai 2027. Eure persönliche Einladung zu unserer Hochzeit." />
 <meta name="twitter:card" content="summary" />
 <meta name="twitter:title" content="Wir heiraten · Chantal & Pascal" />
-<meta name="twitter:description" content="Save the Date — 29. Mai 2027." />
+<meta name="twitter:description" content="Wir sagen Ja — 29. Mai 2027." />
 
 <!-- Titel beim "Zum Home-Bildschirm hinzufügen" (iOS) -->
 <meta name="apple-mobile-web-app-title" content="Chantal & Pascal" />
@@ -354,7 +354,7 @@ body::before{
     <span class="nm b" id="heroNameB">Pascal</span>
   </h1>
   <div class="date-line" id="heroDate">29 · Mai · 2027</div>
-  <div class="scroll-cue"><span>Save the Date</span><span class="dot"></span></div>
+  <div class="scroll-cue"><span id="scrollSpruch">Es ist Hochzeitszeit</span><span class="dot"></span></div>
 </header>
 
 <!-- ══════════════════ EINLEITUNG + PAARFOTO ══════════════════ -->
@@ -590,6 +590,8 @@ body::before{
         <div class="field"><label>Bräutigam</label><input type="text" id="eBraeutigam"></div>
         <div class="field"><label>Datum &amp; Uhrzeit (Countdown)</label><input type="datetime-local" id="eDatumISO"></div>
         <div class="field"><label>Datum-Anzeige (Hero)</label><input type="text" id="eDatumText" placeholder="29 · Mai · 2027"></div>
+        <div class="field"><label>Spruch im Logo (oben im Kreis, kurz halten)</label><input type="text" id="eLogoSpruch" maxlength="22" placeholder="Wir sagen Ja"></div>
+        <div class="field"><label>Spruch unten im Startbild</label><input type="text" id="eScrollSpruch" placeholder="Es ist Hochzeitszeit"></div>
         <div class="field"><label>Hashtag</label><input type="text" id="eHashtag"></div>
       </div>
     </div>
@@ -687,6 +689,8 @@ const CONFIG = {
 
   datumISO:     "2027-05-29T15:45",     // JJJJ-MM-TTThh:mm
   datumText:    "29 · Mai · 2027",
+  logoSpruch:   "Wir sagen Ja",          // Text im Bogen des Logos (oben)
+  scrollSpruch: "Es ist Hochzeitszeit",  // kleiner Text unten im Startbild
 
   hashtag:      "#ChantalUndPascal2027",
 
@@ -868,6 +872,7 @@ function sealSVG(sfx){
   const [iA, iB] = CONFIG.initialen.split("&").map(s => s.trim());
   const initA = iA || CONFIG.braut[0], initB = iB || CONFIG.braeutigam[0];
   const dt = (CONFIG.datumText || "").toUpperCase();
+  const ls = esc((CONFIG.logoSpruch || "Wir sagen Ja").toUpperCase());
   return `<svg class="crest" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 220" role="img" aria-label="Monogramm ${initA} und ${initB}">
     <defs>
       <path id="at${sfx}" d="M50 108 A58 58 0 0 1 170 108" fill="none"/>
@@ -875,7 +880,7 @@ function sealSVG(sfx){
     </defs>
     <circle class="r1" cx="110" cy="110" r="92"/>
     <circle class="r2" cx="110" cy="110" r="84"/>
-    <text class="arc" font-size="9.5" letter-spacing="4"><textPath href="#at${sfx}" startOffset="50%" text-anchor="middle">SAVE THE DATE</textPath></text>
+    <text class="arc" font-size="9.5" letter-spacing="4"><textPath href="#at${sfx}" startOffset="50%" text-anchor="middle">${ls}</textPath></text>
     <text class="arc" font-size="9.5" letter-spacing="3.5"><textPath href="#ab${sfx}" startOffset="50%" text-anchor="middle">${dt}</textPath></text>
     <text class="mono" x="110" y="124" text-anchor="middle" font-size="54">${initA} <tspan class="amp" font-size="44">&amp;</tspan> ${initB}</text>
     <path class="swash" d="M84 136 q26 11 52 0"/>
@@ -895,6 +900,7 @@ function renderConfigTexts(){
   $("heroNameA").textContent = CONFIG.braut;
   $("heroNameB").textContent = CONFIG.braeutigam;
   $("heroDate").textContent  = CONFIG.datumText;
+  $("scrollSpruch").textContent = CONFIG.scrollSpruch || "Es ist Hochzeitszeit";
   $("hashtag").textContent = CONFIG.hashtag;
 }
 renderConfigTexts();
@@ -1654,6 +1660,8 @@ function populateEditor(){
   $("eBraeutigam").value   = CONFIG.braeutigam || "";
   $("eDatumISO").value     = isoFromConfig();
   $("eDatumText").value    = CONFIG.datumText || "";
+  $("eLogoSpruch").value   = CONFIG.logoSpruch || "";
+  $("eScrollSpruch").value = CONFIG.scrollSpruch || "";
   $("eHashtag").value      = CONFIG.hashtag || "";
 
   $("eTrauungWhen").value  = CONFIG.trauungWhen || "";
@@ -1734,6 +1742,8 @@ $("saveConfig").addEventListener("click", async () => {
     initialen:    CONFIG.initialen,
     datumISO:     isoVal || CONFIG.datumISO,
     datumText:    $("eDatumText").value.trim(),
+    logoSpruch:   $("eLogoSpruch").value.trim(),
+    scrollSpruch: $("eScrollSpruch").value.trim(),
     hashtag:      $("eHashtag").value.trim(),
     trauungWhen:  $("eTrauungWhen").value.trim(),
     trauungName:  $("eTrauungName").value.trim(),
