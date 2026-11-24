@@ -558,11 +558,16 @@ body::before{
   <span id="footCrest"></span>
   <div class="closing">Wir freuen uns auf euch.</div>
   <div class="tag" id="hashtag">#ChantalUndPascal2027</div>
-  <br>
-  <button class="admin-link" id="editOpen">Inhalte bearbeiten</button>
-  &nbsp;·&nbsp;
-  <button class="admin-link" id="adminOpen">Rückmeldungen</button>
+  <div id="adminLinks">
+    <button class="admin-link" id="editOpen">Inhalte bearbeiten</button>
+    &nbsp;·&nbsp;
+    <button class="admin-link" id="adminOpen">Rückmeldungen</button>
+  </div>
 </footer>
+<script>
+  // Auf persönlichen Einladungen (?gast=...) keine Admin-Links anzeigen
+  if (new URLSearchParams(location.search).get("gast")) document.getElementById("adminLinks").style.display = "none";
+</script>
 
 <!-- Admin: Rückmeldungen -->
 <div class="admin" id="adminPanel">
