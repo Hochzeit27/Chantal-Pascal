@@ -459,10 +459,8 @@ body::before{
 
       <!-- Zusage: Personenzahl + dynamische Namensfelder -->
       <div class="hidden-until-choice" id="yesBlock">
-        <div class="field">
-          <label for="fGuests">Anzahl Personen</label>
-          <input type="number" id="fGuests" min="1" max="12" step="1" value="1" inputmode="numeric" />
-        </div>
+        <!-- Personenzahl ist fest durch die Einladung vorgegeben (keine zusätzlichen Personen) -->
+        <input type="hidden" id="fGuests" value="1" />
         <div id="nameFields"></div>
         <div class="field">
           <label for="fDiet">Allergien / Essenswünsche</label>
@@ -1337,15 +1335,17 @@ const nameFields = $("nameFields"), guestsInput = $("fGuests");
 let autoSelected = tryAutoSelectFromURL();
 
 function renderNameFields(){
-  const n = Math.max(1, Math.min(12, parseInt(guestsInput.value,10) || 1));
+  // genau so viele Namensfelder wie eingeladen — Gäste können keine Personen hinzufügen
+  const n = Math.max(1, (selectedGuest && selectedGuest.persons) || parseInt(guestsInput.value,10) || 1);
   const existing = [...nameFields.querySelectorAll("input")].map(i => i.value);
   const members = (selectedGuest && selectedGuest.members) || [];
   let html = "";
   for (let i=1;i<=n;i++){
     const val = (existing[i-1] || members[i-1] || "").replace(/"/g,"&quot;");
-    html += `<div class="field"><label for="fName${i}">Name ${i}</label>`
+    html += `<div class="field"><label for="fName${i}">${n === 1 ? "Name" : "Name " + i}</label>`
           + `<input type="text" id="fName${i}" class="guestName" placeholder="Vor- und Nachname" value="${val}" /></div>`;
   }
+  if (n > 1) html += `<p class="form-hint" style="font-size:13px;color:var(--ink-soft);margin:-4px 0 14px;font-style:italic;">Falls jemand von euch nicht kommen kann, lasst das Feld einfach leer.</p>`;
   nameFields.innerHTML = html;
 }
 
@@ -1355,7 +1355,6 @@ form.attending.forEach(r => r.addEventListener("change", () => {
   noBlock.classList.toggle("show", !ja);
   if (ja) renderNameFields();
 }));
-guestsInput.addEventListener("input", renderNameFields);
 
 // Firebase-Schreibvorgang mit Zeitlimit, damit der Button nie ewig hängt
 function withTimeout(promise, ms){
@@ -1383,7 +1382,8 @@ form.addEventListener("submit", async e => {
     name: names.join(", "),
     names,
     attending,
-    guests:  attending === "ja" ? (parseInt(guestsInput.value,10) || names.length) : 0,
+    // gezählt werden die ausgefüllten Namen, höchstens die eingeladene Personenzahl
+    guests:  attending === "ja" ? Math.min(names.length, (selectedGuest && selectedGuest.persons) || names.length) : 0,
     diet:    attending === "ja" ? $("fDiet").value.trim() : "",
     message: $("fMsg").value.trim(),
     guestId:    selectedGuest ? (selectedGuest.id || slugify(selectedGuest.label)) : "",
