@@ -1141,6 +1141,9 @@ function duForm(t){
     .replace(/\bgebt\b/g,"gib").replace(/\bkommt\b/g,"komm").replace(/\bseid\b/g,"sei")
     .replace(/\bplant\b/g,"planst").replace(/\bmöchtet\b/g,"möchtest")
     .replace(/\bIhr\b/g,"Du").replace(/\bihr\b/g,"du")
+    // "euch" im Akkusativ → "dich" (z. B. "euch bitten", "auf euch", "für euch")
+    .replace(/\b(für|auf|um|ohne|gegen|durch|an) euch\b/gi,"$1 dich")
+    .replace(/\beuch((?:\s+[A-Za-zÄÖÜäöüß-]+){0,3}?)\s+(bitten|sehen|begrüßen|einladen|erwarten|herzlich|willkommen|überraschen|treffen|umarmen|vermissen|lieben|kennenlernen)\b/g,"dich$1 $2")
     .replace(/\beuch\b/g,"dir").replace(/\beuren\b/g,"deinen").replace(/\beurem\b/g,"deinem")
     .replace(/\beure\b/g,"deine").replace(/\beuer\b/g,"dein");
 }
